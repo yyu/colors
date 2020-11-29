@@ -7,7 +7,9 @@ import time
 shades = (0, 95, 135, 175, 215, 255)
 
 def closest_shade(x):
-    """not optimal, not very pythonic, but is ok when shade array is small"""
+    """Find the closest shade to a given x.
+    This is not optimal, nor is it very pythonic, but it's ok when shade array is small.
+    """
     delta_min = 256
     closest_shade = 0
     for shade in shades:
@@ -51,6 +53,10 @@ class RGB:
             return RGB(closest_shade(r), closest_shade(g), closest_shade(b))
 
 def get_xterm256():
+    """Returns a list of RGB objects. This index of each RGB is the xterm color value.
+
+    For example, xterm256[209] is (255, 135, 95), which means if we do `echo -e "\033[48;5;209m  \033[0m"` we get an orange block.
+    """
     xterm256 = [-1] * 256
 
     xterm256[ 0] = RGB(  0,   0,   0)
@@ -97,13 +103,15 @@ if __name__ == '__main__':
     # print(xterm256_reverse_map)
     # print(xterm256_reverse_map[RGB(255, 175, 215)])
 
+    # some tests
     for html_color in ('eeeeee', '#eeeeee', '#121212', '#801cee', 'ff87d7'):
         rgb = RGB.from_html(html_color)
         print(html_color, ' => ', rgb, rgb.to_html(), xterm256_reverse_map[rgb])
 
-    print('\033[48;5;232m' + '-' * 80)
-    print('\033[48;5;232m' + '.' * 80)
-    print('\033[?25l')
+    print('-' * 80)
+    # print('\033[48;5;232m' + '-' * 80)
+    # print('\033[48;5;232m' + '.' * 80)
+    # print('\033[?25l')  # hide the cursor
 
     nr_leds = 25
 
@@ -116,7 +124,7 @@ if __name__ == '__main__':
             xterm256_color = xterm256_reverse_map[rgb]
             if line_no % nr_leds == 0:
                 print('\033[%dA' % nr_leds, end='')
-            print('\033[48;5;%dm  \033[48;5;232m ' % xterm256_color, end='')
+            print('\033[48;5;%dm  \033[0m ' % xterm256_color, end='')
             print(line, ' => ', rgb, rgb.to_html(), xterm256_color)
         except:
             # ignoring exceptions, simply print the unhandled line
